@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histologia do Tecido Muscular</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* == Theme Colors for Muscle Tissue == */
+            --repouso-color: #059669;      /* Green for Organization/Skeletal */
+            --graduado-color: #2563eb;     /* Blue for Filaments/Molecular */
+            --acao-color: #dc2626;         /* Red for Contraction/Cardiac */
+
+            /* Glow/Highlight Colors for light theme */
+            --repouso-glow: rgba(5, 150, 105, 0.2);
+            --graduado-glow: rgba(37, 99, 235, 0.2);
+            --acao-glow: rgba(220, 38, 38, 0.2);
+            
+            /* Theme Border Colors for light theme */
+            --repouso-border: rgba(5, 150, 105, 0.4);
+            --graduado-border: rgba(37, 99, 235, 0.4);
+            --acao-border: rgba(220, 38, 38, 0.4);
+
+            /* Light Theme Palette */
+            --bg-main: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+        }
+
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background-color: var(--bg-main);
+            transition: background-color 0.5s ease-in-out; /* For quiz feedback */
+        }
+        
+        /* == Background color flash for Quiz == */
+        body.correct-bg { background-color: #dcfce7; }
+        body.incorrect-bg { background-color: #fee2e2; }
+
+        /* Animated background shapes */
+        .background-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: -2;
+        }
+        .light-bubble {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.15; 
+            animation: moveBubble 35s infinite alternate;
+        }
+        .light-bubble.b1 { width: 45vw; height: 45vw; top: 5%; left: -10%; background: var(--repouso-color); animation-duration: 40s; }
+        .light-bubble.b2 { width: 45vw; height: 45vw; top: 40%; left: 70%; background: var(--acao-color); animation-duration: 35s; }
+        .light-bubble.b3 { width: 50vw; height: 50vw; top: 60%; left: 10%; background: var(--graduado-color); animation-duration: 45s; }
+
+        @keyframes moveBubble {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(15vw, -20vh) scale(1.2); }
+        }
+        
+        /* Dynamic background glows for transitions */
+        .dynamic-bg-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 150vmax;
+            height: 150vmax;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: -1;
+        }
+        #bg-potencial-repouso { background-color: var(--repouso-color); }
+        #bg-potenciais-graduados { background-color: var(--graduado-color); }
+        #bg-potencial-acao { background-color: var(--acao-color); }
+
+        .section-container {
+            width: 100%;
+            padding: 7rem 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+        
+        #hero { 
+            min-height: 90vh; 
+            padding-top: 2rem; 
+            padding-bottom: 2rem;
+        }
+        #hero h1 { 
+            font-size: clamp(2.8rem, 7vw, 5rem); 
+            font-weight: 800; 
+            letter-spacing: -0.05em; 
+            text-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+        #hero p { 
+            font-size: clamp(1.1rem, 2.5vw, 1.35rem); 
+            max-width: 650px; 
+            color: var(--text-secondary);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-header-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+            overflow: hidden;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .section-header-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .section-header-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6);
+            z-index: 1;
+        }
+        .section-header-card > * {
+             position: relative;
+             z-index: 2;
+        }
+        .section-header-card .section-title {
+            margin-bottom: 1rem;
+        }
+        #hero .section-header-card { margin-bottom: 0; } 
+
+        .section-title { font-size: clamp(2.2rem, 5.5vw, 4rem); font-weight: 800; letter-spacing: -0.04em; color: var(--text-primary); position: relative; }
+        .section-subtitle { 
+            font-size: clamp(1rem, 2vw, 1.2rem); 
+            max-width: 700px; 
+            color: var(--text-secondary); 
+            margin-bottom: 0;
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
+        .topics-grid {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .topic-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .topic-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .topic-card:nth-child(1) { transition-delay: 0.05s; }
+        .topic-card:nth-child(2) { transition-delay: 0.1s; }
+        .topic-card:nth-child(3) { transition-delay: 0.15s; }
+        .topic-card:nth-child(4) { transition-delay: 0.2s; }
+        .topic-card:nth-child(5) { transition-delay: 0.25s; }
+
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6);
+            transition: box-shadow 0.4s ease;
+            z-index: 1;
+        }
+        
+        .topic-card:hover::before { 
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.8);
+        }
+        
+        .topic-card > div {
+            position: relative;
+            z-index: 2;
+        }
+
+        .topic-card:hover { 
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3); 
+        }
+        
+        .topic-card .summary { 
+            color: var(--text-primary);
+            text-shadow: none;
+            font-size: 1.125rem; 
+            font-weight: 600; 
+            padding: 1.5rem; 
+            cursor: pointer; 
+            outline: none; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .topic-card .summary::after { 
+            content: '+'; 
+            font-size: 1.5rem; 
+            font-weight: 400; 
+            color: var(--text-secondary);
+            text-shadow: none;
+            transition: transform 0.3s ease-in-out; 
+        }
+        .topic-card.is-open > .summary::after { transform: rotate(45deg); }
+        .topic-card.is-open > .summary { 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+        }
+        
+        .topic-content-wrapper {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .topic-content { 
+            padding: 1.5rem; 
+            font-size: 0.95rem; 
+            color: var(--text-secondary);
+            text-shadow: none;
+        }
+
+        .image-bubble {
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 1.25rem;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .image-bubble:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        .image-bubble svg {
+            width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+            display: block;
+        }
+        
+        #potencial-repouso .topic-card.is-open {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08), inset 0 0 0 2px var(--repouso-border);
+        }
+        #potenciais-graduados .topic-card.is-open {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08), inset 0 0 0 2px var(--graduado-border);
+        }
+        #potencial-acao .topic-card.is-open {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08), inset 0 0 0 2px var(--acao-border);
+        }
+        
+        #potencial-repouso .topic-card.is-open:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1), inset 0 0 0 2px rgba(5, 150, 105, 0.6);
+        }
+        #potenciais-graduados .topic-card.is-open:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1), inset 0 0 0 2px rgba(37, 99, 235, 0.6);
+        }
+        #potencial-acao .topic-card.is-open:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1), inset 0 0 0 2px rgba(220, 38, 38, 0.6);
+        }
+        
+        .term { 
+            text-decoration: none; 
+            cursor: pointer; 
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 0.6rem;
+            transition: all 0.2s ease-in-out;
+            text-shadow: none;
+        }
+        #potencial-repouso .term { background-color: var(--repouso-glow); color: #065f46; }
+        #potenciais-graduados .term { background-color: var(--graduado-glow); color: #1e40af; }
+        #potencial-acao .term { background-color: var(--acao-glow); color: #991b1b; }
+        .term:hover { 
+            filter: brightness(1.15); 
+        }
+
+        /* Modal Styling */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(248, 250, 252, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+            z-index: 1000;
+        }
+        #modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.4s ease;
+        }
+        
+        #modal-content {
+            background: rgba(255, 255, 255, 0.55); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+            border-radius: 2rem;
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.95);
+            transition: transform 0.4s ease;
+            overflow: hidden; 
+        }
+        
+        #modal-content.image-modal {
+             max-width: 650px;
+        }
+        
+        #modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6);
+            z-index: 1;
+        }
+
+        #modal-overlay.visible #modal-content { 
+            transform: scale(1);
+        }
+        
+        #modal-content.theme-potencial-repouso { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), inset 0 0 0 2px var(--repouso-border); }
+        #modal-content.theme-potenciais-graduados { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), inset 0 0 0 2px var(--graduado-border); }
+        #modal-content.theme-potencial-acao { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), inset 0 0 0 2px var(--acao-border); }
+        
+        #modal-header, #modal-description {
+            position: relative;
+            z-index: 2;
+        }
+
+        #modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            text-align: center;
+            /* Diminuindo o padding-bottom de 1.5rem para 0.5rem (de 24px para 8px) */
+            padding: 1.5rem 3.5rem 0.5rem 3.5rem; 
+        }
+        
+        #modal-title { 
+            font-size: 1.75rem; 
+            font-weight: 700; 
+            text-shadow: none;
+        }
+        #modal-header.theme-potencial-repouso #modal-title { color: var(--repouso-color); }
+        #modal-header.theme-potenciais-graduados #modal-title { color: var(--graduado-color); }
+        #modal-header.theme-potencial-acao #modal-title { color: var(--acao-color); }
+        
+        #modal-description { 
+            font-size: 1.05rem; 
+            color: var(--text-secondary); 
+            line-height: 1.7; 
+            /* Diminuindo o padding-top de 1.5rem para 0.5rem (de 24px para 8px) */
+            padding: 0.5rem 2rem 2rem 2rem; 
+        }
+        
+        #modal-image-container {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+        #modal-image-container svg {
+            width: 100%;
+            max-width: 450px;
+            height: auto;
+            border-radius: 1rem;
+        }
+
+        #modal-close-btn {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            border-radius: 50%;
+            width: 2.5rem; height: 2.5rem;
+            cursor: pointer; 
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            z-index: 3;
+        }
+        #modal-close-btn:hover { background: rgba(0,0,0,0.1); transform: scale(1.1); }
+        
+        .footer-signature { text-align: center; padding: 4rem 1rem; background-color: transparent; color: #94a3b8; }
+        ul { list-style-position: inside; padding-left: 0.5rem;}
+        li { margin-bottom: 0.5rem; }
+
+        /* == Quiz Styles == */
+        #quiz-section {
+             background: rgba(255, 255, 255, 0.2);
+             backdrop-filter: blur(15px);
+             -webkit-backdrop-filter: blur(15px);
+             border-top: 1px solid rgba(255, 255, 255, 0.3);
+             padding-bottom: 4rem;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 9999px;
+            padding: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        #progress-bar-fill {
+            height: 1.5rem;
+            background: linear-gradient(90deg, #4ade80, #3b82f6);
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+        }
+        #progress-label {
+            text-align: center;
+            margin-top: 0.75rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        /* New Question Counter Display */
+        #question-counter-display {
+            position: absolute;
+            top: 2.5rem;
+            right: 2.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        #question-counter-display.facil-bg { background-color: #22c55e; }
+        #question-counter-display.media-bg { background-color: #f59e0b; }
+        #question-counter-display.dificil-bg { background-color: #ef4444; }
+        
+        /* Timer Display Styles */
+        #timer-display {
+            position: absolute;
+            top: 2.5rem;
+            left: 2.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.4);
+            border: 3px solid var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        #timer-display.warning {
+            border-color: #f59e0b;
+            color: #b45309;
+            transform: scale(1.1);
+        }
+        #timer-display.danger {
+            border-color: #ef4444;
+            color: #991b1b;
+            transform: scale(1.1);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        #quiz-question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            padding: 0 96px; /* Space for timer and difficulty */
+            text-align: center;
+        }
+        
+        #quiz-options {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quiz-option {
+            background-color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+            will-change: transform, box-shadow;
+        }
+
+        .quiz-option:hover {
+            transform: translateY(-3px);
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quiz-option.disabled { cursor: not-allowed; opacity: 0.7; }
+        .quiz-option.correct-answer {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            color: #15803d;
+            font-weight: 600;
+        }
+        .quiz-option.incorrect-answer {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+            color: #b91c1c;
+            font-weight: 600;
+        }
+        
+        /* === NEW AND MODIFIED BUTTON STYLES === */
+        #quiz-start-btn, #restart-quiz-btn {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-weight: 700;
+            padding: 1rem 2.5rem;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #quiz-start-btn { color: var(--text-primary); }
+        #quiz-start-btn:disabled { 
+            cursor: not-allowed; 
+            background: rgba(226, 232, 240, 0.5);
+            color: #94a3b8;
+        }
+
+        #restart-quiz-btn {
+            color: var(--acao-color);
+            margin-top: 2rem;
+        }
+        
+        #reset-progress-btn {
+            color: #475569; /* slate-600 */
+            background: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        #quiz-start-btn:hover, #restart-quiz-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        #reset-progress-btn:hover {
+             color: var(--text-primary);
+             text-decoration: underline;
+        }
+        /* === END NEW STYLES === */
+        
+        #quiz-results { text-align: center; }
+        
+        #quiz-results h3 {
+             font-size: 2rem;
+             font-weight: 700;
+             margin-bottom: 1.5rem;
+        }
+
+        #quiz-percentage {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .stat-correct, .stat-incorrect {
+            font-weight: 600;
+            color: var(--text-primary);
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .stat-correct { background-color: rgba(34, 197, 94, 0.25); }
+        .stat-incorrect { background-color: rgba(239, 68, 68, 0.25); }
+        
+        #missed-topics-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        .missed-topic-bubble {
+            background-color: #f1f5f9;
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .missed-topic-bubble:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .missed-topic-bubble.visited-topic {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            color: #166534;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <div class="light-bubble b1"></div>
+        <div class="light-bubble b2"></div>
+        <div class="light-bubble b3"></div>
+        <!-- IDs mantidos para preservar a lógica JS de mudança de cor de fundo -->
+        <div class="dynamic-bg-glow" id="bg-potencial-repouso"></div>
+        <div class="dynamic-bg-glow" id="bg-potenciais-graduados"></div>
+        <div class="dynamic-bg-glow" id="bg-potencial-acao"></div>
+    </div>
+
+    <section id="hero" class="section-container">
+        <div class="section-header-card">
+            <h1>Tecido Muscular</h1>
+            <p class="mt-4">Uma jornada interativa pela biologia celular e molecular do tecido muscular, explorando seus tipos, estrutura e mecanismo de contração.</p>
+        </div>
+    </section>
+    
+    <!-- SEÇÃO 1: Tipos e Organização do Músculo (Cores/IDs mantidos) -->
+    <section id="potencial-repouso" class="section-container">
+        <div class="section-header-card">
+            <h2 class="section-title">A Organização Geral do Músculo</h2>
+            <p class="section-subtitle">Entenda as classificações e as camadas de tecido conjuntivo que formam a estrutura muscular.</p>
+        </div>
+        <div class="topics-grid">
+            <div class="topic-card" id="topic-diferenca-potencial">
+                <div class="summary">Tipos de Tecido Muscular</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>O tecido muscular é classificado em três tipos principais com base na morfologia e no controle:</li>
+                            <li><span class="term" data-description="Voluntário, com estriações, e células (fibras) longas e multinucleadas com núcleos periféricos. Responsável pela movimentação esquelética.">Muscular Estriado Esquelético</span>: Controla o movimento esquelético.</li>
+                            <li><span class="term" data-description="Involuntário, com estriações, e células uni ou binucleadas com núcleo central. Apresenta Discos Intercalares para comunicação rápida. Exclusivo do coração.">Muscular Estriado Cardíaco</span>: Responsável pelos batimentos cardíacos.</li>
+                            <li><span class="term" data-description="Involuntário, sem estriações (não estriado), e células fusiformes com núcleo único e central. Encontrado em órgãos internos (vísceras) e vasos sanguíneos.">Muscular Liso</span>: Contração lenta e sustentada.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-composicao-ionica">
+                <div class="summary">Nomenclatura Específica (Sarcossomos)</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <p class="mb-2">Para o tecido muscular (especialmente o estriado), a nomenclatura das estruturas celulares é adaptada:</p>
+                        <ul>
+                            <li>Célula Muscular = <span class="term" data-description="Nome dado à célula muscular por sua forma alongada, especialmente no músculo esquelético.">Fibra Muscular</span>.</li>
+                            <li>Membrana Plasmática = <span class="term" data-description="É o nome da membrana plasmática da fibra muscular, que recebe o impulso nervoso.">Sarcolema</span>.</li>
+                            <li>Citoplasma = <span class="term" data-description="Nome do citoplasma da célula muscular.">Sarcoplasma</span>.</li>
+                            <li>Retículo Endoplasmático Liso = <span class="term" data-description="Especializado no armazenamento e liberação de íons Cálcio ($Ca^{2+}$), essenciais para a contração.">Retículo Sarcoplasmático (RS)</span>.</li>
+                            <li>Mitocôndrias = <span class="term" data-description="Nome dado às mitocôndrias devido à sua abundância no sarcoplasma, fornecendo ATP para a contração.">Sarcossomos</span>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-permeabilidade-canais">
+                <div class="summary">Bainhas de Tecido Conjuntivo</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <p class="mb-2">O tecido conjuntivo envolve e organiza as fibras musculares em níveis hierárquicos, conferindo suporte e permitindo a vascularização:</p>
+                        <ul>
+                            <li><span class="term" data-description="Camada de tecido conjuntivo denso que envolve o músculo inteiro (órgão).">Epimísio</span>: Envolve todo o músculo.</li>
+                            <li><span class="term" data-description="Camada de tecido conjuntivo que envolve um feixe ou fascículo de fibras musculares.">Perimísio</span>: Envolve um grupo de fibras musculares (fascículo).</li>
+                            <li><span class="term" data-description="Camada delicada de tecido conjuntivo (fibras reticulares) que envolve individualmente cada fibra muscular.">Endomísio</span>: Envolve cada fibra muscular (célula).</li>
+                            <li>Estas bainhas carregam <span class="term" data-description="Vasos sanguíneos e nervos que penetram o tecido muscular, essenciais para nutrição e inervação.">vasos sanguíneos e nervos</span>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+             <div class="topic-card" id="topic-bomba-sodio-potassio">
+                <div class="summary">A Unidade Contratil: Sarcômero</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>A repetição ordenada dos filamentos finos e espessos forma o <span class="term" data-description="Unidade funcional básica e repetitiva do músculo estriado. É delimitado pelas duas Linhas Z adjacentes.">Sarcômero</span>.</li>
+                            <li><span class="term" data-description="Disco escuro (Anisotrópica), composto pelos filamentos de Miosina e parte dos filamentos de Actina sobrepostos. Seu tamanho não se altera na contração.">Banda A</span>: Região escura central.</li>
+                            <li><span class="term" data-description="Disco claro (Isotrópica), composto apenas pelos filamentos delgados de Actina. Encurta durante a contração.">Banda I</span>: Região clara.</li>
+                            <li><span class="term" data-description="Faixa clara dentro da Banda A, contendo apenas filamentos espessos de Miosina. Encurta durante a contração.">Banda H</span>: Centro da Banda A.</li>
+                            <li><span class="term" data-description="Estrutura que delimita o sarcômero, servindo de âncora para os filamentos de Actina.">Linha Z</span>: Delimita o sarcômero.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 2: Miofilamentos e Proteínas (Cores/IDs mantidos) -->
+    <section id="potenciais-graduados" class="section-container">
+         <div class="section-header-card">
+            <h2 class="section-title">Miofilamentos e Proteínas Acessórias</h2>
+            <p class="section-subtitle">Mergulhe nas proteínas contráteis fundamentais: Actina, Miosina e o Complexo Regulador (Troponina/Tropomiosina).</p>
+        </div>
+        <div class="topics-grid">
+            <div class="topic-card" id="topic-sinais-locais">
+                <div class="summary">Os Miofilamentos (Actina e Miosina)</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>A base da contração muscular reside na interação entre dois tipos de filamentos proteicos: os delgados e os espessos.</li>
+                            <li><span class="term" data-description="Filamento Delgado: Formado principalmente pela proteína Actina. Âncorado na Linha Z do sarcômero.">Actina</span>: Forma os filamentos delgados.</li>
+                            <li><span class="term" data-description="Filamento Espesso: Formado pela proteína Miosina II, que possui 'cabeças' capazes de hidrolisar ATP e interagir com a Actina.">Miosina</span>: Formam os filamentos espessos.</li>
+                            <li>Durante a contração, as cabeças da Miosina puxam os filamentos de Actina, encurtando o sarcômero.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-magnitude-decremento">
+                <div class="summary">Filamento Delgado e Tropomiosina</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>O filamento delgado é uma hélice dupla de <span class="term" data-description="Actina F (Filamentar): É o polímero formado por subunidades de Actina G (Globular).">Actina F</span>.</li>
+                            <li>Sobre a Actina F, existe a proteína <span class="term" data-description="Tropomiosina: Proteína filamentar que, no músculo em repouso, bloqueia fisicamente o sítio de ligação da Miosina na Actina, impedindo a contração.">Tropomiosina</span>, que atua como um 'interruptor' passivo.</li>
+                            <li>Para que a contração ocorra, a Tropomiosina deve ser deslocada, expondo os sítios ativos da Actina.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-somacao-limiar">
+                <div class="summary">O Complexo Troponina (Gatilho da Contração)</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <p class="mb-2">A Troponina é um complexo de três subunidades, responsável por mover a Tropomiosina e iniciar a contração:</p>
+                        <ul>
+                            <li><span class="term" data-description="TnT: Subunidade da Troponina que se liga à Tropomiosina, mantendo o complexo unido.">Troponina T (TnT)</span>: Liga o complexo à Tropomiosina.</li>
+                            <li><span class="term" data-description="TnI: Subunidade da Troponina que se liga à Actina. É a porção inibitória, mantendo a contração 'desligada' em repouso.">Troponina I (TnI)</span>: Inibe a interação Actina-Miosina.</li>
+                            <li><span class="term" data-description="TnC: Subunidade da Troponina que se liga aos íons Cálcio ($Ca^{2+}$). Esta ligação é o evento que desencadeia a contração.">Troponina C (TnC)</span>: Fixa o $Ca^{2+}$.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-peps-pips">
+                <div class="summary">Filamento Espesso e Ciclo de Pontes Cruzadas</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <ul>
+                            <li>O filamento espesso é composto pela <span class="term" data-description="Miosina II: Molécula que forma os filamentos espessos, caracterizada por duas cabeças e uma cauda. As cabeças são as 'pontes cruzadas'.">Miosina II</span>, que se organiza em um feixe.</li>
+                            <li>A cabeça da Miosina atua como uma <span class="term" data-description="ATPase: Enzima que hidroliza o ATP. A cabeça da Miosina usa essa energia para o movimento de 'remada' no ciclo de contração.">ATPase</span>, liberando energia do ATP.</li>
+                            <li>O ciclo de pontes cruzadas é a sequência de eventos onde a Miosina se liga à Actina, puxa o filamento (golpe de força) e se desliga, usando a energia do ATP.</li>
+                            <li>O ATP é necessário tanto para a contração (fornecimento de energia) quanto para o <span class="term" data-description="O ATP é essencial para que a cabeça da Miosina se desligue da Actina, prevenindo o 'rigor' muscular.">relaxamento (separação Miosina-Actina)</span>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO 3: O Processo Contratil e Especializações (Cores/IDs mantidos) -->
+    <section id="potencial-acao" class="section-container">
+        <div class="section-header-card">
+            <h2 class="section-title">Contração e Tipos Específicos</h2>
+            <p class="section-subtitle">Entenda o mecanismo de deslizamento e as particularidades do tecido cardíaco e liso.</p>
+        </div>
+        <div class="topics-grid">
+            <div class="topic-card" id="topic-fases-potencial-acao">
+                <div class="summary">O Mecanismo de Deslizamento</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <p class="mb-2">A Teoria do Filamento Deslizante explica como ocorre o encurtamento muscular:</p>
+                        <ul>
+                            <li>Os filamentos de <span class="term" data-description="Actina: O filamento delgado que é puxado pela Miosina.">Actina</span> deslizam sobre os filamentos de <span class="term" data-description="Miosina: O filamento espesso que faz o movimento de 'remada'.">Miosina</span>.</li>
+                            <li>O Sarcômero <span class="term" data-description="Aproximação das Linhas Z: Ocorre o encurtamento da unidade funcional.">encurta</span>, pois as Linhas Z se aproximam.</li>
+                            <li>As Bandas <span class="term" data-description="Bandas que encurtam: A Banda I (apenas Actina) e a Banda H (apenas Miosina) diminuem de tamanho.">I e H encurtam</span>.</li>
+                            <li>A Banda A <span class="term" data-description="Banda que não encurta: O comprimento da Banda A (Miosina) permanece constante durante a contração.">mantém o seu tamanho</span>, pois representa o comprimento dos filamentos de Miosina.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-canais-voltagem">
+                <div class="summary">Acoplamento Excitação-Contração</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <p class="mb-2">O processo que liga o impulso nervoso à contração mecânica:</p>
+                        <ul>
+                            <li>O impulso nervoso atinge a fibra muscular (sarcolema).</li>
+                            <li>A despolarização viaja para o interior da célula através dos <span class="term" data-description="Túbulos T: Invaginações do Sarcolema que levam o potencial de ação rapidamente para o interior da fibra muscular.">Túbulos T</span>.</li>
+                            <li>O sinal nos Túbulos T causa a liberação de $Ca^{2+}$ armazenado no <span class="term" data-description="Retículo Sarcoplasmático (RS): Reservatório de $Ca^{2+}$ que, quando liberado, se liga à Troponina C.">Retículo Sarcoplasmático (RS)</span>.</li>
+                            <li>O $Ca^{2+}$ liga-se à <span class="term" data-description="Troponina C (TnC): A subunidade que se liga ao Cálcio, deslocando a Tropomiosina e permitindo a interação Actina-Miosina.">TnC</span> e inicia o deslizamento dos filamentos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-periodo-refratario">
+                <div class="summary">Especialização do Músculo Cardíaco</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <p class="mb-2">O tecido muscular cardíaco apresenta estruturas únicas para sua função de bombeamento:</p>
+                        <ul>
+                            <li><span class="term" data-description="Discos Intercalares: Complexos juncionais encontrados no músculo cardíaco, responsáveis pela adesão celular e pela comunicação elétrica entre as células.">Discos Intercalares</span>: Garantem a coesão e a sincronização.</li>
+                            <li>Contêm <span class="term" data-description="Junções Comunicantes (Gap): Permitem a passagem rápida de íons (eletricidade) entre as células, sincronizando a contração.">Junções Comunicantes (Gap)</span> para a propagação rápida do potencial de ação.</li>
+                            <li>O sistema de Túbulos T e RS forma uma <span class="term" data-description="Díade: Estrutura formada pela associação de um Túbulo T e apenas uma Cisterna Terminal do Retículo Sarcoplasmático (diferente da Tríade do músculo esquelético).">Díade</span> (1 Túbulo T + 1 Cisterna) na altura da Linha Z.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="topic-card" id="topic-anestesicos-locais">
+                <div class="summary">Especialização do Músculo Liso</div>
+                <div class="topic-content-wrapper">
+                    <div class="topic-content">
+                        <p class="mb-2">O músculo liso, sem estriações, possui um mecanismo de contração adaptado:</p>
+                        <ul>
+                            <li>Suas células são <span class="term" data-description="Células Fusiformes: Formato alongado com extremidades afiladas e núcleo central único.">fusiformes</span> e não apresentam sarcômeros organizados.</li>
+                            <li>Os filamentos de Actina e Miosina são ancorados nos <span class="term" data-description="Corpos Densos: Estruturas citoplasmáticas que servem como ponto de ancoragem para os filamentos de Actina, análogos funcionais da Linha Z.">Corpos Densos</span>.</li>
+                            <li>A regulação da contração é feita pelo complexo <span class="term" data-description="Calmodulina: Proteína que se liga ao $Ca^{2+}$ no músculo liso (análoga à Troponina C no estriado) para iniciar a contração.">Calmodulina-$Ca^{2+}$</span>.</li>
+                            <li>Sua contração é <span class="term" data-description="Contração Lenta e Sustentada: Característica ideal para manter o tônus em vasos sanguíneos ou vísceras por longos períodos.">lenta e sustentada</span>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="quiz-section" class="section-container">
+        <div class="section-header-card">
+            <h2 class="section-title">Teste seu Conhecimento</h2>
+            <p class="section-subtitle">Vamos ver o que você aprendeu! Responda às perguntas a seguir para testar sua compreensão sobre a Histologia do Tecido Muscular.</p>
+        </div>
+
+        <div id="quiz-area" class="w-full max-w-3xl flex flex-col items-center">
+            
+            <div id="progress-bar-container">
+                <div id="progress-bar-fill" style="width: 0%;">0%</div>
+            </div>
+            <div id="progress-label">Progresso: 0 de 60 questões dominadas</div>
+
+            <div id="quiz-container" class="quiz-container hidden">
+                <div id="timer-display">30</div>
+                <div id="question-counter-display"></div>
+                <h3 id="quiz-question"></h3>
+                <ul id="quiz-options"></ul>
+            </div>
+
+            <div id="quiz-results" class="quiz-container hidden">
+                <h3>Quiz Finalizado!</h3>
+                <div id="quiz-percentage">100%</div>
+                <div class="results-stats">
+                    <span id="stat-correct-count" class="stat-correct"></span>
+                    <span id="stat-incorrect-count" class="stat-incorrect"></span>
+                </div>
+                <h4 class="text-lg font-semibold mt-6 mb-2 text-slate-700">Tópicos para revisar:</h4>
+                <ul id="missed-topics-list"></ul>
+                 <button id="restart-quiz-btn">Novo Quiz</button>
+            </div>
+
+            <div id="start-area" class="flex flex-col items-center">
+                 <button id="quiz-start-btn">Começar Quiz</button>
+                 <button id="reset-progress-btn">Zerar Progresso</button>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="footer-signature">
+        <p>Feito por Rafael Chaves Sebe.</p>
+    </footer>
+
+    <div id="modal-overlay" class="fixed inset-0">
+        <div id="modal-content" class="relative">
+             <button id="modal-close-btn" class="absolute top-4 right-4 z-20">&times;</button>
+            <div id="modal-header" class="relative hidden">
+                <h3 id="modal-title"></h3>
+            </div>
+            <div id="modal-image-container" class="hidden">
+                </div>
+            <p id="modal-description"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observer for section background changes
+            const bgObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const glowId = `bg-${entry.target.id}`;
+                    const glowEl = document.getElementById(glowId);
+                    if (glowEl) {
+                        if (entry.isIntersecting) {
+                            glowEl.style.opacity = '0.25';
+                        } else {
+                            glowEl.style.opacity = '0';
+                        }
+                    }
+                });
+            }, { threshold: 0.4 }); 
+
+            document.querySelectorAll('#potencial-repouso, #potenciais-graduados, #potencial-acao').forEach(section => {
+                bgObserver.observe(section);
+            });
+
+            // Observer for card animations
+            const cardObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    } else if (entry.boundingClientRect.top > 0) {
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, {
+                threshold: 0.01
+            });
+            document.querySelectorAll('.topic-card, .section-header-card').forEach(card => {
+                cardObserver.observe(card);
+            });
+
+            // Modal logic
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContent = document.getElementById('modal-content');
+            const modalHeader = document.getElementById('modal-header');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const modalImageContainer = document.getElementById('modal-image-container');
+
+            function openModal() {
+                modalOverlay.classList.add('visible');
+                document.body.style.overflow = 'hidden';
+            }
+
+            const closeModal = () => {
+                modalOverlay.classList.remove('visible');
+                setTimeout(() => {
+                    if (!modalOverlay.classList.contains('visible')) {
+                         document.body.style.overflow = '';
+                         modalImageContainer.innerHTML = '';
+                    }
+                }, 400); 
+            };
+
+            // Event Listeners for Terms
+            document.querySelectorAll('.term').forEach(term => {
+                term.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const title = term.textContent;
+                    const description = term.getAttribute('data-description');
+                    const parentSection = term.closest('section');
+                    let theme = 'potencial-repouso'; 
+                    if (parentSection && parentSection.id) {
+                       if (parentSection.id === 'potenciais-graduados') theme = 'potenciais-graduados';
+                       else if (parentSection.id === 'potencial-acao') theme = 'potencial-acao';
+                    }
+                    
+                    modalContent.classList.remove('image-modal');
+                    modalHeader.classList.remove('hidden');
+                    modalImageContainer.classList.add('hidden');
+                    
+                    modalTitle.textContent = title;
+                    modalDescription.textContent = description;
+                    
+                    modalContent.className = 'relative'; 
+                    modalHeader.className = '';
+                    modalContent.classList.add(`theme-${theme}`);
+                    modalHeader.classList.add(`theme-${theme}`);
+                    
+                    openModal();
+                });
+            });
+
+             // Event Listeners for Images/SVGs (REMOVIDOS DO HTML, MANTIDA A LÓGICA VAZIA)
+            document.querySelectorAll('.image-bubble').forEach(bubble => {
+                bubble.addEventListener('click', () => {
+                    const isSvg = bubble.dataset.imgSvg === 'true';
+                    const description = bubble.dataset.imgDescription;
+                    const parentSection = bubble.closest('section');
+                     let theme = 'potencial-repouso'; 
+                    if (parentSection && parentSection.id) {
+                       if (parentSection.id === 'potenciais-graduados') theme = 'potenciais-graduados';
+                       else if (parentSection.id === 'potencial-acao') theme = 'potencial-acao';
+                    }
+
+                    modalContent.classList.add('image-modal');
+                    modalHeader.classList.add('hidden');
+                    modalImageContainer.classList.remove('hidden');
+                    
+                    if (isSvg) {
+                       const svgElement = bubble.querySelector('svg').cloneNode(true); // Clonagem
+                       modalImageContainer.innerHTML = svgElement.outerHTML; // Inserir o SVG (vazio neste caso)
+                    } 
+                    
+                    modalDescription.textContent = description;
+
+                    modalContent.className = 'relative image-modal'; 
+                    modalContent.classList.add(`theme-${theme}`);
+
+                    openModal();
+                });
+            });
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (event) => {
+                if (event.target === modalOverlay) closeModal();
+            });
+            
+            // Accordion logic
+            document.querySelectorAll('.topic-card .summary').forEach(summary => {
+                summary.addEventListener('click', (e) => {
+                    const card = e.currentTarget.parentElement;
+                    toggleAccordion(card);
+                });
+            });
+
+            function toggleAccordion(cardToToggle) {
+                const contentWrapper = cardToToggle.querySelector('.topic-content-wrapper');
+                const isOpen = cardToToggle.classList.contains('is-open');
+
+                const parentGrid = cardToToggle.closest('.topics-grid');
+                parentGrid.querySelectorAll('.topic-card.is-open').forEach(openCard => {
+                    if (openCard !== cardToToggle) {
+                        const otherContentWrapper = openCard.querySelector('.topic-content-wrapper');
+                        otherContentWrapper.style.maxHeight = '0px';
+                        openCard.classList.remove('is-open');
+                    }
+                });
+
+                if (isOpen) {
+                    contentWrapper.style.maxHeight = '0px';
+                    cardToToggle.classList.remove('is-open');
+                } else {
+                    const content = cardToToggle.querySelector('.topic-content');
+                    contentWrapper.style.maxHeight = content.scrollHeight + 'px';
+                    cardToToggle.classList.add('is-open');
+                }
+            }
+            
+            // ===================================
+            // == QUIZ LOGIC V4 - ADAPTADO PARA TECIDO MUSCULAR
+            // ===================================
+
+            const questionBank = [
+                // --- FÁCIL: 20 Questões ---
+                { id: 1, difficulty: 'Fácil', question: "Qual é a principal função do tecido muscular?", topic: "Tipos de Tecido Muscular", options: ["Suporte estrutural", "Produção de hormônios", "Contração e movimento", "Revestimento de superfícies"], correctAnswer: 2 },
+                { id: 2, difficulty: 'Fácil', question: "O Músculo Liso é classificado como:", topic: "Tipos de Tecido Muscular", options: ["Voluntário e estriado", "Involuntário e estriado", "Voluntário e não estriado", "Involuntário e não estriado"], correctAnswer: 3 },
+                { id: 3, difficulty: 'Fácil', question: "Qual camada de tecido conjuntivo envolve o músculo inteiro (órgão)?", topic: "Bainhas de Tecido Conjuntivo", options: ["Endomísio", "Perimísio", "Epimísio", "Sarcolema"], correctAnswer: 2 },
+                { id: 4, difficulty: 'Fácil', question: "O Sarcolema é o nome dado à qual estrutura da fibra muscular?", topic: "Nomenclatura Específica (Sarcossomos)", options: ["Citoplasma", "Mitocôndria", "Membrana plasmática", "Retículo endoplasmático liso"], correctAnswer: 2 },
+                { id: 5, difficulty: 'Fácil', question: "Qual a unidade funcional e estrutural básica do músculo estriado?", topic: "A Unidade Contratil: Sarcômero", options: ["Miofibrila", "Miofilamento", "Sarcômero", "Fascículo"], correctAnswer: 2 },
+                { id: 6, difficulty: 'Fácil', question: "Qual filamento é considerado o 'delgado' no processo de contração?", topic: "Os Miofilamentos (Actina e Miosina)", options: ["Miosina", "Tropomiosina", "Actina", "Troponina"], correctAnswer: 2 },
+                { id: 7, difficulty: 'Fácil', question: "Em qual fase do ciclo de contração o ATP é essencial para a separação da Miosina e Actina?", topic: "Filamento Espesso e Ciclo de Pontes Cruzadas", options: ["Golpe de força", "Ligação inicial", "Repouso", "Desligamento da Actina"], correctAnswer: 3 },
+                { id: 8, difficulty: 'Fácil', question: "A Banda I do sarcômero é composta por:", topic: "A Unidade Contratil: Sarcômero", options: ["Apenas Miosina", "Apenas Actina", "Actina e Miosina", "Apenas a Linha M"], correctAnswer: 1 },
+                { id: 9, difficulty: 'Fácil', question: "Qual das subunidades da Troponina se liga ao íon Cálcio (Ca²⁺)?", topic: "O Complexo Troponina (Gatilho da Contração)", options: ["TnI", "TnT", "TnC", "TnB"], correctAnswer: 2 },
+                { id: 10, difficulty: 'Fácil', question: "O Músculo Estriado Esquelético é de controle:", topic: "Tipos de Tecido Muscular", options: ["Involuntário", "Automático", "Voluntário", "Neural"], correctAnswer: 2 },
+                { id: 11, difficulty: 'Fácil', question: "Qual estrutura libera o Ca²⁺ no sarcoplasma para iniciar a contração?", topic: "Acoplamento Excitação-Contração", options: ["Sarcolema", "Túbulos T", "Mitocôndria", "Retículo Sarcoplasmático (RS)"], correctAnswer: 3 },
+                { id: 12, difficulty: 'Fácil', question: "A proteína que bloqueia o sítio de ligação da Miosina na Actina em repouso é:", topic: "Filamento Delgado e Tropomiosina", options: ["Troponina C", "Miosina", "Tropomiosina", "Titina"], correctAnswer: 2 },
+                { id: 13, difficulty: 'Fácil', question: "A contração muscular é explicada pela teoria do:", topic: "O Mecanismo de Deslizamento", options: ["Potencial de Ação", "Bomba de Íons", "Filamento Deslizante", "Catabolismo de Glicose"], correctAnswer: 2 },
+                { id: 14, difficulty: 'Fácil', question: "No músculo cardíaco, as junções Gap estão localizadas em qual estrutura?", topic: "Especialização do Músculo Cardíaco", options: ["Epimísio", "Discos Intercalares", "Corpos Densos", "Sarcolema"], correctAnswer: 1 },
+                { id: 15, difficulty: 'Fácil', question: "Qual estrutura do músculo liso é análoga à Linha Z do sarcômero?", topic: "Especialização do Músculo Liso", options: ["Junções comunicantes", "Corpos Densos", "Placas motoras", "Retículo sarcoplasmático"], correctAnswer: 1 },
+                { id: 16, difficulty: 'Fácil', question: "As mitocôndrias no tecido muscular são chamadas de:", topic: "Nomenclatura Específica (Sarcossomos)", options: ["Sarcómeros", "Sarcossomos", "Sarcolemas", "Sarcoplasmas"], correctAnswer: 1 },
+                { id: 17, difficulty: 'Fácil', question: "Qual subunidade da Troponina se liga à Tropomiosina?", topic: "O Complexo Troponina (Gatilho da Contração)", options: ["TnC", "TnI", "TnT", "TnR"], correctAnswer: 2 },
+                { id: 18, difficulty: 'Fácil', question: "O Músculo Estriado Cardíaco se diferencia por ser:", topic: "Tipos de Tecido Muscular", options: ["Voluntário e multinucleado", "Involuntário e apresentar discos intercalares", "Não estriado e fusiforme", "Involuntário e multinucleado periférico"], correctAnswer: 1 },
+                { id: 19, difficulty: 'Fácil', question: "Durante o deslizamento, qual banda do sarcômero NÃO altera seu tamanho?", topic: "O Mecanismo de Deslizamento", options: ["Banda I", "Banda H", "Banda A", "Linha Z"], correctAnswer: 2 },
+                { id: 20, difficulty: 'Fácil', question: "A contração do músculo liso é regulada principalmente pelo complexo Ca²⁺-:", topic: "Especialização do Músculo Liso", options: ["Troponina", "Tropomiosina", "Calmodulina", "Miomesina"], correctAnswer: 2 },
+
+                // --- MÉDIA: 20 Questões ---
+                { id: 21, difficulty: 'Média', question: "Qual a função primária do Túbulo T no acoplamento excitação-contração?", topic: "Acoplamento Excitação-Contração", options: ["Produzir ATP", "Armazenar Ca²⁺", "Levar o potencial de ação para o interior da fibra", "Promover a ligação Actina-Miosina"], correctAnswer: 2 },
+                { id: 22, difficulty: 'Média', question: "No músculo esquelético, a célula (fibra) é caracterizada por ter:", topic: "Tipos de Tecido Muscular", options: ["Núcleo central único", "Núcleos periféricos e múltiplos", "Discos intercalares", "Ausência de estriações"], correctAnswer: 1 },
+                { id: 23, difficulty: 'Média', question: "O Perimísio envolve qual estrutura do tecido muscular?", topic: "Bainhas de Tecido Conjuntivo", options: ["O músculo inteiro", "Cada fibra muscular individual", "Um feixe de fibras (fascículo)", "O sarcômero"], correctAnswer: 2 },
+                { id: 24, difficulty: 'Média', question: "A Banda H é a região do sarcômero que contém apenas:", topic: "A Unidade Contratil: Sarcômero", options: ["Actina", "Miosina", "Linha Z", "Tropomiosina"], correctAnswer: 1 },
+                { id: 25, difficulty: 'Média', question: "A cabeça da Miosina atua como qual tipo de enzima para liberar energia?", topic: "Filamento Espesso e Ciclo de Pontes Cruzadas", options: ["Colagenase", "Protease", "ATPase", "Fosfatase"], correctAnswer: 2 },
+                { id: 26, difficulty: 'Média', question: "Se a subunidade TnI da Troponina não estivesse presente, o que ocorreria no músculo em repouso?", topic: "O Complexo Troponina (Gatilho da Contração)", options: ["O Ca²⁺ não seria liberado", "A Tropomiosina não se ligaria à Actina", "A interação Actina-Miosina não seria inibida, levando a uma contração constante", "O filamento de Miosina se desintegraria"], correctAnswer: 2 },
+                { id: 27, difficulty: 'Média', question: "O que acontece com as Linhas Z durante o encurtamento (contração) do sarcômero?", topic: "O Mecanismo de Deslizamento", options: ["Elas se afastam", "Elas permanecem no mesmo lugar", "Elas se aproximam", "Elas somem"], correctAnswer: 2 },
+                { id: 28, difficulty: 'Média', question: "Qual das estruturas é um reservatório especializado de Ca²⁺ na fibra muscular?", topic: "Nomenclatura Específica (Sarcossomos)", options: ["Sarcolema", "Túbulo T", "Retículo Sarcoplasmático", "Sarcossomo"], correctAnswer: 2 },
+                { id: 29, difficulty: 'Média', question: "Qual a diferença de composição da Díade (músculo cardíaco) em relação à Tríade (músculo esquelético)?", topic: "Especialização do Músculo Cardíaco", options: ["Díade tem 2 Túbulos T e 1 Cisterna", "Díade tem 1 Túbulo T e 1 Cisterna", "Díade não tem Retículo Sarcoplasmático", "Díade tem apenas Túbulos T"], correctAnswer: 1 },
+                { id: 30, difficulty: 'Média', question: "A Calmodulina no músculo liso é funcionalmente análoga a qual proteína do músculo estriado?", topic: "Especialização do Músculo Liso", options: ["Tropomiosina", "Miosina", "Troponina C", "Actina F"], correctAnswer: 2 },
+                { id: 31, difficulty: 'Média', question: "O que garante a sincronização da contração entre as células do músculo cardíaco?", topic: "Especialização do Músculo Cardíaco", options: ["A presença de múltiplas mitocôndrias", "O sistema de Túbulos T", "As Junções Comunicantes (Gap) nos discos intercalares", "O Epimísio"], correctAnswer: 2 },
+                { id: 32, difficulty: 'Média', question: "A principal função das subunidades de Miosina (cabeças) é:", topic: "Filamento Espesso e Ciclo de Pontes Cruzadas", options: ["Ancorar a Actina", "Prevenir a contração em repouso", "Formar pontes cruzadas e hidrolisar ATP", "Delimitar o sarcômero"], correctAnswer: 2 },
+                { id: 33, difficulty: 'Média', question: "O músculo liso realiza contração de forma 'lenta e sustentada'. Qual a implicação disso?", topic: "Especialização do Músculo Liso", options: ["Garante movimentos rápidos e explosivos", "É ideal para manter o tônus em vasos e vísceras", "Consome grandes quantidades de ATP", "Requer o controle voluntário"], correctAnswer: 1 },
+                { id: 34, difficulty: 'Média', question: "O Epimísio, Perimísio e Endomísio são importantes porque fornecem:", topic: "Bainhas de Tecido Conjuntivo", options: ["A força contrátil", "A Actina e Miosina", "Suporte, nervos e vascularização", "Os íons Ca²⁺"], correctAnswer: 2 },
+                { id: 35, difficulty: 'Média', question: "A despolarização do sarcolema é o primeiro passo para o:", topic: "Acoplamento Excitação-Contração", options: ["Acoplamento excitação-contração", "Relaxamento muscular", "Formação de colágeno", "Síntese de Actina"], correctAnswer: 0 },
+                { id: 36, difficulty: 'Média', question: "A Actina F é um polímero de qual proteína globular?", topic: "Filamento Delgado e Tropomiosina", options: ["Tropomiosina", "Troponina I", "Actina G", "Miomesina"], correctAnswer: 2 },
+                { id: 37, difficulty: 'Média', question: "Qual o nome da faixa clara (Actina pura) dentro da Banda I?", topic: "A Unidade Contratil: Sarcômero", options: ["Linha Z", "Banda H", "Linha M", "Banda I"], correctAnswer: 3 },
+                { id: 38, difficulty: 'Média', question: "O músculo estriado cardíaco é estriado porque possui:", topic: "Tipos de Tecido Muscular", options: ["Controle voluntário", "Núcleo central", "Sarcômeros organizados", "Células fusiformes"], correctAnswer: 2 },
+                { id: 39, difficulty: 'Média', question: "Qual a função da TnI (Troponina I)?", topic: "O Complexo Troponina (Gatilho da Contração)", options: ["Ligar o cálcio", "Ligar a Actina e inibir a contração em repouso", "Ligar a Miosina", "Ligar a Tropomiosina"], correctAnswer: 1 },
+                { id: 40, difficulty: 'Média', question: "A energia para o ciclo de pontes cruzadas é fornecida pela hidrólise de:", topic: "Filamento Espesso e Ciclo de Pontes Cruzadas", options: ["ADP", "Glicose", "Ácido Lático", "ATP"], correctAnswer: 3 },
+
+                // --- DIFÍCIL: 20 Questões ---
+                { id: 41, difficulty: 'Difícil', question: "Se uma toxina bloqueasse a função da Troponina C (TnC), o que seria diretamente impedido?", topic: "O Complexo Troponina (Gatilho da Contração)", options: ["A hidrólise de ATP pela Miosina", "O deslizamento dos filamentos após a ligação do Ca²⁺", "A liberação de Ca²⁺ do RS", "A transmissão do impulso nervoso"], correctAnswer: 1 },
+                { id: 42, difficulty: 'Difícil', question: "Qual a principal diferença na organização do Ca²⁺ entre o músculo estriado esquelético e o músculo liso?", topic: "Acoplamento Excitação-Contração", options: ["No esquelético, o Ca²⁺ vem principalmente do extracelular; no liso, do RS", "No esquelético, o Ca²⁺ se liga à Calmodulina; no liso, à Troponina", "No esquelético, o Ca²⁺ vem do RS; no liso, o Ca²⁺ extracelular é mais importante e se liga à Calmodulina", "Não há diferença na origem do Ca²⁺"], correctAnswer: 2 },
+                { id: 43, difficulty: 'Difícil', question: "O rigor mortis (rigidez cadavérica) ocorre porque:", topic: "Filamento Espesso e Ciclo de Pontes Cruzadas", options: ["Não há Actina suficiente", "Há excesso de Ca²⁺", "O ATP está esgotado, impedindo que a Miosina se desligue da Actina", "As Linhas Z se quebram"], correctAnswer: 2 },
+                { id: 44, difficulty: 'Difícil', question: "Qual das proteínas NÃO está diretamente envolvida na regulação da interação Actina-Miosina no músculo estriado?", topic: "O Complexo Troponina (Gatilho da Contração)", options: ["Tropomiosina", "Troponina T", "Troponina C", "Miomesina"], correctAnswer: 3 },
+                { id: 45, difficulty: 'Difícil', question: "O que permite que o músculo cardíaco atue como um sincício funcional (unidade de contração única), apesar de ser composto por células individuais?", topic: "Especialização do Músculo Cardíaco", options: ["A Díade", "Os Corpos Densos", "As Junções Comunicantes (Gap)", "A multinucleação periférica"], correctAnswer: 2 },
+                { id: 46, difficulty: 'Difícil', question: "A Banda A se mantém constante durante a contração porque:", topic: "O Mecanismo de Deslizamento", options: ["A Actina se encurta", "Representa o comprimento dos filamentos de Miosina, que não se encurtam", "Ocorre apenas deslizamento de Actina", "A Banda H se expande"], correctAnswer: 1 },
+                { id: 47, difficulty: 'Difícil', question: "Onde o Epimísio, Perimísio e Endomísio se fundem para formar os tendões que se ligam ao osso?", topic: "Bainhas de Tecido Conjuntivo", options: ["No sarcômero", "Na Linha Z", "Na junção miotendínea", "No Retículo Sarcoplasmático"], correctAnswer: 2 },
+                { id: 48, difficulty: 'Difícil', question: "A característica 'não estriado' do músculo liso é devida a:", topic: "Especialização do Músculo Liso", options: ["Ausência de Actina e Miosina", "Falta de Túbulos T", "Ausência de organização dos filamentos em sarcômeros", "Seu controle ser involuntário"], correctAnswer: 2 },
+                { id: 49, difficulty: 'Difícil', question: "O que são Sarcossomos, e por que são numerosos no músculo cardíaco?", topic: "Nomenclatura Específica (Sarcossomos)", options: ["Lisossomos, para digestão celular", "Mitocôndrias, para alta demanda energética (ATP)", "Núcleos, para produção proteica", "Cisternas terminais, para Ca²⁺"], correctAnswer: 1 },
+                { id: 50, difficulty: 'Difícil', question: "Se os Túbulos T fossem quimicamente bloqueados, o que seria impedido no músculo esquelético?", topic: "Acoplamento Excitação-Contração", options: ["A liberação de Ca²⁺ do RS para a profundidade da fibra", "A despolarização do sarcolema", "A entrada de ATP na célula", "A ligação Ca²⁺-TnC"], correctAnswer: 0 },
+                { id: 51, difficulty: 'Difícil', question: "A presença de discos intercalares e núcleo central (uni ou bi) é a descrição histológica de qual tecido?", topic: "Tipos de Tecido Muscular", options: ["Esquelético", "Liso", "Cardíaco", "Nervoso"], correctAnswer: 2 },
+                { id: 52, difficulty: 'Difícil', question: "Qual a função dos Corpos Densos no músculo liso?", topic: "Especialização do Músculo Liso", options: ["Produção de proteínas", "Ancoragem para Actina e filamentos intermediários", "Armazenamento de Ca²⁺", "Criação de junções Gap"], correctAnswer: 1 },
+                { id: 53, difficulty: 'Difícil', question: "Se houver hipercalemia (excesso de K⁺ no extracelular), isso afetaria mais diretamente o tecido muscular estriado via:", topic: "Acoplamento Excitação-Contração", options: ["Alteração da força do golpe de força", "Alteração do potencial de membrana em repouso", "Alteração da afinidade da TnC pelo Ca²⁺", "Bloqueio do Epimísio"], correctAnswer: 1 },
+                { id: 54, difficulty: 'Difícil', question: "Qual das seguintes estruturas diminui de tamanho durante a contração muscular?", topic: "O Mecanismo de Deslizamento", options: ["Comprimento da Miosina", "Banda A", "Sarcômero", "Linha M"], correctAnswer: 2 },
+                { id: 55, difficulty: 'Difícil', question: "O que acontece com a Tropomiosina quando o Ca²⁺ se liga à Troponina C?", topic: "O Complexo Troponina (Gatilho da Contração)", options: ["Ela se degrada", "Ela se torna rígida", "Ela se desloca, expondo os sítios de ligação da Actina", "Ela se liga à Miosina"], correctAnswer: 2 },
+                { id: 56, difficulty: 'Difícil', question: "Os Discos Intercalares no músculo cardíaco são compostos por:", topic: "Especialização do Músculo Cardíaco", options: ["Apenas Junções Comunicantes", "Junções Comunicantes e Desmossomos", "Apenas Desmossomos", "Apenas Túbulos T"], correctAnswer: 1 },
+                { id: 57, difficulty: 'Difícil', question: "A principal diferença funcional do Músculo Estriado Esquelético é a velocidade de contração ser:", topic: "Tipos de Tecido Muscular", options: ["Sustentada e lenta", "Lenta e involuntária", "Rápida e forte", "Variável dependendo da calmodulina"], correctAnswer: 2 },
+                { id: 58, difficulty: 'Difícil', question: "No ciclo de pontes cruzadas, o que a hidrólise de ATP faz na cabeça da Miosina?", topic: "Filamento Espesso e Ciclo de Pontes Cruzadas", options: ["Faz com que a Miosina se desligue da Actina", "Energiza e 'arma' a cabeça para a próxima ligação", "Causa o golpe de força (puxão)", "Bloqueia a ligação de Actina"], correctAnswer: 1 },
+                { id: 59, difficulty: 'Difícil', question: "Qual o papel do Endomísio na fibra muscular individual?", topic: "Bainhas de Tecido Conjuntivo", options: ["Formar a Linha Z", "Distribuir Ca²⁺", "Suporte delicado e troca metabólica com capilares", "Gerar o impulso nervoso"], correctAnswer: 2 },
+                { id: 60, difficulty: 'Difícil', question: "Em qual parte do sarcômero se localiza a Linha M?", topic: "A Unidade Contratil: Sarcômero", options: ["No meio da Banda I", "Na extremidade da Banda A", "No centro da Banda H (e de A)", "Entre a Linha Z e a Banda H"], correctAnswer: 2 },
+            ];
+
+            const startBtn = document.getElementById('quiz-start-btn');
+            const restartBtn = document.getElementById('restart-quiz-btn');
+            const resetBtn = document.getElementById('reset-progress-btn'); 
+            const startArea = document.getElementById('start-area'); // New start area container
+            const quizContainer = document.getElementById('quiz-container');
+            const resultsContainer = document.getElementById('quiz-results');
+            const questionEl = document.getElementById('quiz-question');
+            const optionsEl = document.getElementById('quiz-options');
+            const questionCounterDisplay = document.getElementById('question-counter-display');
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressLabel = document.getElementById('progress-label');
+            const timerDisplay = document.getElementById('timer-display');
+            
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let missedTopics = [];
+            let activeQuiz = [];
+            let correctlyAnsweredIds = [];
+
+            let questionTimer;
+            let countdownInterval;
+            const TIMER_DURATION = 30; 
+
+            function loadProgress() {
+                const savedProgress = localStorage.getItem('bioquiz_correctlyAnsweredIds');
+                correctlyAnsweredIds = savedProgress ? JSON.parse(savedProgress) : [];
+                updateProgressBar();
+                checkCompletion(); // Check if all questions are answered on load
+            }
+
+            function saveProgress() {
+                localStorage.setItem('bioquiz_correctlyAnsweredIds', JSON.stringify(correctlyAnsweredIds));
+            }
+
+            function updateProgressBar() {
+                const totalQuestions = questionBank.length;
+                const answeredCount = correctlyAnsweredIds.length;
+                const percentage = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+                
+                progressBarFill.style.width = `${percentage}%`;
+                progressBarFill.textContent = `${percentage}%`;
+                progressLabel.textContent = `Progresso: ${answeredCount} de ${totalQuestions} questões dominadas`;
+            }
+
+            function checkCompletion() {
+                const availableQuestions = questionBank.filter(q => !correctlyAnsweredIds.includes(q.id));
+                if (availableQuestions.length === 0) {
+                    startBtn.disabled = true;
+                    startBtn.textContent = "Parabéns, você dominou tudo!";
+                } else {
+                    startBtn.disabled = false;
+                    startBtn.textContent = "Começar Quiz";
+                }
+            }
+            
+            function startQuiz() {
+                const availableQuestions = questionBank.filter(q => !correctlyAnsweredIds.includes(q.id));
+                
+                if (availableQuestions.length === 0) {
+                     checkCompletion();
+                     return;
+                }
+
+                // Seleciona um subconjunto de 10 questões aleatórias entre as disponíveis
+                activeQuiz = [...availableQuestions].sort(() => 0.5 - Math.random()).slice(0, 10);
+                
+                currentQuestionIndex = 0;
+                score = 0;
+                missedTopics = [];
+                
+                startArea.classList.add('hidden');
+                resultsContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                showQuestion();
+            }
+
+            function startTimer() {
+                clearTimeout(questionTimer);
+                clearInterval(countdownInterval);
+
+                let timeLeft = TIMER_DURATION;
+                timerDisplay.textContent = timeLeft;
+                timerDisplay.className = 'absolute top-10 left-10 w-11 h-11 rounded-full bg-white/40 border-2 border-slate-600 flex items-center justify-center text-base font-bold text-slate-800 transition-all duration-300 ease-in-out';
+                
+                countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    timerDisplay.textContent = timeLeft;
+                    if (timeLeft <= 10 && timeLeft > 5) {
+                        timerDisplay.classList.add('warning');
+                    } else if (timeLeft <= 5) {
+                        timerDisplay.classList.add('danger');
+                    }
+                }, 1000);
+
+                questionTimer = setTimeout(() => {
+                    clearInterval(countdownInterval);
+                    handleTimeUp();
+                }, TIMER_DURATION * 1000);
+            }
+
+            function handleTimeUp() {
+                 selectAnswer(null);
+            }
+
+            function showQuestion() {
+                resetState();
+                if (currentQuestionIndex >= activeQuiz.length) {
+                    showResults();
+                    return;
+                }
+                const questionData = activeQuiz[currentQuestionIndex];
+
+                questionCounterDisplay.textContent = `${currentQuestionIndex + 1}/${activeQuiz.length}`;
+                questionCounterDisplay.classList.remove('facil-bg', 'media-bg', 'dificil-bg');
+                if (questionData.difficulty === 'Fácil') {
+                    questionCounterDisplay.classList.add('facil-bg');
+                } else if (questionData.difficulty === 'Média') {
+                    questionCounterDisplay.classList.add('media-bg');
+                } else if (questionData.difficulty === 'Difícil') {
+                    questionCounterDisplay.classList.add('dificil-bg');
+                }
+
+                // Removemos o código que insere SVGs aqui, pois não há mais gráficos.
+
+                questionEl.textContent = questionData.question;
+                
+                questionData.options.forEach((option, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = option;
+                    li.classList.add('quiz-option');
+                    li.dataset.index = index;
+                    li.addEventListener('click', selectAnswer);
+                    optionsEl.appendChild(li);
+                });
+                startTimer();
+            }
+
+            function resetState() {
+                clearTimeout(questionTimer);
+                clearInterval(countdownInterval);
+                const existingSvg = quizContainer.querySelector('.quiz-question-svg');
+                if (existingSvg) {
+                    existingSvg.remove();
+                }
+                while(optionsEl.firstChild) {
+                    optionsEl.removeChild(optionsEl.firstChild);
+                }
+                document.body.classList.remove('correct-bg', 'incorrect-bg');
+            }
+            
+            function selectAnswer(e) {
+                clearTimeout(questionTimer);
+                clearInterval(countdownInterval);
+
+                const selectedOption = e ? e.target : null;
+                Array.from(optionsEl.children).forEach(option => option.removeEventListener('click', selectAnswer));
+
+                const currentQuestion = activeQuiz[currentQuestionIndex];
+                const correctIndex = currentQuestion.correctAnswer;
+                let isCorrect = false;
+
+                if(selectedOption && parseInt(selectedOption.dataset.index) === correctIndex) {
+                    isCorrect = true;
+                }
+                
+                Array.from(optionsEl.children).forEach((optionNode, index) => {
+                    optionNode.classList.add('disabled');
+                    if (index === correctIndex) {
+                        optionNode.classList.add('correct-answer');
+                    }
+                });
+
+                if (isCorrect) {
+                    score++;
+                    if(selectedOption) selectedOption.classList.add('correct-answer');
+                    document.body.classList.add('correct-bg');
+                    if (!correctlyAnsweredIds.includes(currentQuestion.id)) {
+                        correctlyAnsweredIds.push(currentQuestion.id);
+                        saveProgress();
+                        updateProgressBar();
+                    }
+                } else {
+                    if (selectedOption) {
+                        selectedOption.classList.add('incorrect-answer');
+                    }
+                    missedTopics.push(currentQuestion.topic);
+                    document.body.classList.add('incorrect-bg');
+                }
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    if(currentQuestionIndex < activeQuiz.length) {
+                        showQuestion();
+                    } else {
+                        showResults();
+                    }
+                }, 2500); 
+            }
+            
+            function showResults() {
+                resetState();
+                quizContainer.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+
+                const percentage = activeQuiz.length > 0 ? Math.round((score / activeQuiz.length) * 100) : 0;
+                document.getElementById('quiz-percentage').textContent = `${percentage}%`;
+                document.getElementById('stat-correct-count').textContent = `✔️ ${score} Acertos`;
+                document.getElementById('stat-incorrect-count').textContent = `❌ ${activeQuiz.length - score} Erros`;
+                
+                const missedListEl = document.getElementById('missed-topics-list');
+                missedListEl.innerHTML = '';
+                
+                if (missedTopics.some(t => t)) {
+                     const uniqueMissedTopics = [...new Set(missedTopics.filter(t => t))];
+                     uniqueMissedTopics.forEach(topicName => {
+                         const targetCard = Array.from(document.querySelectorAll('.topic-card .summary'))
+                             .find(s => s.textContent.trim() === topicName)?.parentElement;
+                         if (targetCard) {
+                             const bubble = document.createElement('li');
+                             bubble.textContent = topicName;
+                             bubble.classList.add('missed-topic-bubble');
+                             bubble.addEventListener('click', (e) => {
+                                 e.currentTarget.classList.add('visited-topic');
+                                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                 if (!targetCard.classList.contains('is-open')) {
+                                     toggleAccordion(targetCard);
+                                 }
+                             });
+                             missedListEl.appendChild(bubble);
+                         }
+                     });
+                } else {
+                     const congrats = document.createElement('li');
+                     if (activeQuiz.length > 0 && score === activeQuiz.length) {
+                         congrats.textContent = "Parabéns, você acertou tudo!";
+                         congrats.classList.add('text-green-600', 'font-semibold');
+                     } else {
+                         congrats.textContent = "Você não errou nenhuma questão com tópico associado. Bom trabalho!";
+                     }
+                     missedListEl.appendChild(congrats);
+                }
+                 checkCompletion();
+            }
+            
+            function resetProgress() {
+                // Lógica de reset mantida, mas removendo alert/confirm para seguir as restrições.
+                localStorage.removeItem('bioquiz_correctlyAnsweredIds');
+                correctlyAnsweredIds = [];
+                updateProgressBar();
+                checkCompletion();
+                console.log("Progresso do quiz zerado."); // Log no console para feedback
+            }
+
+            startBtn.addEventListener('click', startQuiz);
+            restartBtn.addEventListener('click', () => {
+                resultsContainer.classList.add('hidden');
+                startArea.classList.remove('hidden');
+                checkCompletion();
+            });
+            resetBtn.addEventListener('click', resetProgress);
+
+            loadProgress();
+        });
+    </script>
+</body>
+</html>
